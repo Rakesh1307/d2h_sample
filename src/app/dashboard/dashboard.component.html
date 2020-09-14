@@ -1,0 +1,328 @@
+<ul class="options-menu">
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#exampleModal">
+      View Current Balance
+    </button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Current Balance</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Your Current Balance is: {{ availableBalance }} Rs.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#rechargeModal">
+      Recharge Account
+    </button>
+    <div class="modal fade" id="rechargeModal" tabindex="-1" role="dialog" aria-labelledby="rechargeModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rechargeModalLabel">Recharge Account</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="isRechargeDone" class="alert alert-success" role="alert">
+              <button type="button" class="close" (click)="closeAlert()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              Recharge Done Succcesfully!
+              <hr>
+              <p>
+                Your Current Balance is: {{ availableBalance }} Rs.
+              </p>
+            </div>
+            <div class="row">
+              <label class="col-sm-6" for="rechargeAmount">Enter the amount to recharge: </label>
+              <input type="number" min="1" oninput="validity.valid||(value='');" [(ngModel)]="rechargeAmount"
+                placeholder="0" id="rechargeAmount">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary"
+              [disabled]="rechargeAmount === null || rechargeAmount === undefined"
+              (click)="doRecharge()">Recharge</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#viewServicesModal">
+      View Available packs,<br>Channels and Servies
+    </button>
+    <div class="modal fade" id="viewServicesModal" tabindex="-1" role="dialog" aria-labelledby="viewServicesModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewServicesModalLabel">
+              View Available packs, Channels and Servies
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <h6>Available packs for subscription</h6>
+            <div *ngFor="let pack of packs">
+              <div>{{ pack?.name }} - {{ pack?.cost }} Rs</div>
+            </div>
+            <hr>
+
+            <h6>Available channels for subscription</h6>
+            <div *ngFor="let channel of channels">
+              <div>{{ channel?.name }}: {{ channel?.cost }} Rs</div>
+            </div>
+            <hr>
+
+            <h6>Available services for subscription</h6>
+            <div *ngFor="let service of services">
+              <div>Learn {{ service?.name }} Service: {{ service?.cost }} Rs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#subscribeModal">
+      Subscribe to Channel packs
+    </button>
+    <div class="modal fade" id="subscribeModal" tabindex="-1" role="dialog" aria-labelledby="subscribeModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="subscribeModalLabel">Subscribe to Channel packs</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <form #subscribeForm>
+              <div class="form-group row">
+                <label class="col-sm-7" for="rechargePackKey">Enter the Pack you wish to Subscribe:
+                  <small id="rechargePackKeyHelp" class="form-text text-muted">(Silver: ‘S’, Gold: ‘G’):</small>
+                </label>
+                <div class="col-sm-4">
+                  <input type="text" [(ngModel)]="subscriptionFormObj.rechargePackKey" name="rechargePackKey"
+                    id="rechargePackKey">
+                </div>
+
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-7" for="rechargePackMonth">Enter the Months: </label>
+                <div class="col-sm-4">
+                  <input type="number" min=1 [(ngModel)]="subscriptionFormObj.rechargePackMonth"
+                    name="rechargePackMonth" id="rechargePackMonth">
+                </div>
+              </div>
+            </form>
+            <div *ngIf="isSubmitted">
+              <div *ngIf="errorMessage" class="error-color"> {{ errorMessage }} </div>
+              <div *ngIf="!errorMessage">
+                You have successfully subscribed the following packs:
+                <strong>{{ subscriptionSuccessObj.subscribedPack}}</strong><br>
+                Monthly Price: {{ subscriptionSuccessObj.subscribedPackCost}} Rs.<br>
+                Number of Months: {{ subscriptionSuccessObj.subscribedMonths }} Month<br>
+                Subscription Amount: {{ subscriptionSuccessObj.subscriptionCost }} Rs.<br>
+                Disount Applied: {{ subscriptionSuccessObj.discount }} Rs.<br>
+                Final Price: {{ subscriptionSuccessObj.finalPrice }} Rs.<br>
+                Account Balance: <strong>{{ availableBalance }} Rs.</strong><br>
+                Email notification sent successfully<br>
+                SMS notification sent successfully<br>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary"
+              [disabled]="!(subscriptionFormObj?.rechargePackMonth && subscriptionFormObj?.rechargePackKey)"
+              (click)="channelSubscription()">Subscribe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#addChannelsModal">
+      Add channels to a existing subscription
+    </button>
+    <div class="modal fade" id="addChannelsModal" tabindex="-1" role="dialog" aria-labelledby="addChannelsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addChannelsModalLabel">Add channels to a existing subscription</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <label class="col-sm-7" for="rechargeChannelValue">Enter channel names to add:
+                <small id="rechargeChannelValueHelp" class="form-text text-muted">(separated by commas)</small>
+              </label>
+              <div class="col-sm-4">
+                <input type="text" [(ngModel)]="rechargeChannelValue" name="rechargeChannelValue"
+                  id="rechargeChannelValue">
+              </div>
+            </div>
+            <div *ngIf="isChannelSubscSubmitted">
+              <div *ngIf="errorMessage" class="error-color">{{ errorMessage }}</div><br>
+              <div *ngIf="!errorMessage">
+                Channels Added successfully<br>
+                Selected Channels Cost: {{ channelSubscCost }}<br>
+                Account Balance: <strong>{{ availableBalance }} Rs.</strong><br>
+                Email notification sent successfully<br>
+                SMS notification sent successfully
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" [disabled]="!rechargeChannelValue" (click)="addChannels()">Subscribe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#specialServicesModal">
+      Subscribe to Special Services
+    </button>
+    <div class="modal fade" id="specialServicesModal" tabindex="-1" role="dialog"
+      aria-labelledby="specialServicesModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="specialServicesModalLabel">Subscribe to Special Services</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <label class="col-sm-7" for="rechargeService">Enter the service name:
+              </label>
+              <div class="col-sm-4">
+                <input type="text" [(ngModel)]="rechargeService" name="rechargeService" id="rechargeService">
+              </div>
+            </div>
+            <div *ngIf="isServiceSubscSubmitted">
+              <div *ngIf="errorMessage" class="error-color">{{ errorMessage }}</div>
+              <div *ngIf="!isServiceSubscSucess" class="error-color">Please Enter a Valid Service Name</div><br>
+              <div *ngIf="!errorMessage && isServiceSubscSucess">
+                Service Subscribed successfully<br>
+                Account Balance: <strong>{{ availableBalance }} Rs.</strong><br>
+                Email notification sent successfully<br>
+                SMS notification sent successfully
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" [disabled]="!rechargeService" (click)="addServices()">Subscribe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal"
+      data-target="#subscriptionDetailsModal">
+      View current subscription details
+    </button>
+    <div class="modal fade" id="subscriptionDetailsModal" tabindex="-1" role="dialog"
+      aria-labelledby="subscriptionDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="subscriptionDetailsModalLabel">View current subscription details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h6>Subscription Details</h6>
+            <div *ngIf="!currentPack.length">No Active Subscriptions</div>
+            <div *ngFor="let pack of currentPack">
+              {{ pack.name }}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  <li>
+    <button type="button" class="btn btn-primary button-prop" data-toggle="modal" data-target="#updateUser">
+      Update Email and Phone Number notifications
+    </button>
+    <div class="modal fade" id="updateUser" tabindex="-1" role="dialog" aria-labelledby="updateUser" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateUser">Update Email and Phone Number notifications</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <label class="col-sm-4" for="emailId">Enter the Email:
+              </label>
+              <div class="col-sm-7">
+                <input type="email" [(ngModel)]="emailId" name="emailId" id="emailId">
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <label class="col-sm-4" for="phoneNumber">Enter Phone:
+              </label>
+              <div class="col-sm-7">
+                <input type="number" max=9999999999 [(ngModel)]="phoneNumber" name="phoneNumber" id="phoneNumber">
+              </div>
+            </div>
+            <div *ngIf=updateMessage>
+              Email and Phone updated successfully.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" (click)="updateUser()">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <button type="button" class="btn btn-primary button-prop" (click)="logout()">
+      Logout
+    </button>
+  </li>
+</ul>
